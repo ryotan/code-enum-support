@@ -1,0 +1,34 @@
+machine:
+  timezone:
+    Asia/Tokyo
+  java:
+    version: oraclejdk8
+  services:
+
+general:
+  branches:
+    ignore:
+      - gh-pages # list of branches to ignore
+
+dependencies:
+  pre:
+    - bash ci/install-coverage-reporter.sh
+  cache_directories:
+    - ~/.jpm
+
+test:
+  post:
+    - mvn jacoco:report
+    - codacy-coverage-reporter -l Java -r target/site/jacoco/jacoco.xml --projectToken ${CODACY_PROJECT_TOKEN} || echo "Failed to send coverage to Codacy."
+    - mv ./target/surefire-reports $CIRCLE_TEST_REPORTS/junit || echo "Failed to collect test results."
+
+deployment:
+  release: # just a label; label names are completely up to you
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - mvn -s ci/settings.xml deploy
+      - curl --user ${BINTRAY_USER}\:${BINTRAY_TOKEN} -X POST -H "X-GPG-PASSPHRASE:${GPG_SECRET_PASSWORD}" https://api.bintray.com/gpg/ryotan/maven/code-enum-support/versions/$(echo ${CIRCLE_TAG} | sed -e 's/^v//')
+  snapshot: # just a label; label names are completely up to you
+    branch: develop
+    commands:
+      - mvn -s ci/settings.xml deploy
