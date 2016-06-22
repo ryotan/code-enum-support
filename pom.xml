@@ -214,6 +214,28 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.4</version>
+          <configuration>
+            <source>${java.version}</source>
+            <encoding>UTF-8</encoding>
+            <charset>UTF-8</charset>
+            <docencoding>UTF-8</docencoding>
+            <locale>ja_JP</locale>
+            <links>
+              <link>https://docs.oracle.com/javase/jp/8/docs/api/</link>
+            </links>
+            <footer>
+              <![CDATA[
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+                <script>hljs.initHighlightingOnLoad();</script>
+              ]]>
+            </footer>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
           <configuration>
@@ -248,7 +270,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.4</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -262,6 +283,15 @@
       </build>
     </profile>
   </profiles>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <distributionManagement>
     <repository>
