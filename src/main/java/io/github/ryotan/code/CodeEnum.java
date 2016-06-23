@@ -19,14 +19,13 @@ import java.util.stream.Stream;
 
 /**
  * コード値を表すインターフェースです。
- *
- * このインターフェースを実装するクラスは、以下の制約に従ってください。
  * <p>
- * <ul>
- * <li>enumとして宣言されること</li>
- * <li>型パラメータ{@code <C>}に自分自身の型を設定すること。</li>
- * </ul>
+ * このインターフェースを実装するクラスは、以下の制約に従ってください。
  * </p>
+ * <ul>
+ *   <li>enumとして宣言されること</li>
+ *   <li>型パラメータ{@code <C>}に自分自身の型を設定すること。</li>
+ * </ul>
  * <p>実装クラスの例は次のようになります。</p>
  * <pre><code class="java">
  * public enum Gender implements CodeEnum&lt;Gender&gt; {
