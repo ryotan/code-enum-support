@@ -25,14 +25,6 @@ public final class CodeEnumReflectionUtil {
     private CodeEnumReflectionUtil() {
     }
 
-    public static boolean isValidCodeEnumClass(String aClass) {
-        try {
-            return isValidCodeEnumClass(Class.forName(aClass));
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
     public static boolean isValidCodeEnumClass(Class<?> aClass) {
         if (!Enum.class.isAssignableFrom(aClass) || !CodeEnum.class.isAssignableFrom(aClass)) {
             return false;
@@ -42,27 +34,18 @@ public final class CodeEnumReflectionUtil {
                 .filter(CodeEnumReflectionUtil::isCodeEnumType).anyMatch(type -> hasSameParameterizedType(type, aClass));
     }
 
-    public static Class<? extends CodeEnum> getCodeEnumClass(String code) {
-        try {
-            return getCodeEnumClass(Class.forName(code));
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Could not load a class for " + code + ". Check if " + code + " exists in classpath.");
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static Class<? extends CodeEnum> getCodeEnumClass(Class<?> code) {
         if (!isValidCodeEnumClass(code)) {
-            throw new IllegalArgumentException(code.getName() + " is not a valid CodeEnum class. " +
-                    "CodeEnum class must be enum and implement CodeEnum<SELF_TYPE>.");
+            throw new IllegalArgumentException(String.format("%s is not a valid CodeEnum class. "
+                    + "CodeEnum class must be enum and implement CodeEnum<SELF_TYPE>.", code.getName()));
         }
         return (Class<? extends CodeEnum>) code;
     }
 
-    public static <C extends CodeEnum<C>> Predicate<C> getCodePattern(Class<C> code, String pattern) {
-        return findCodePatternsFromField(code, pattern)
-                .orElseGet(() -> findCodePatternsFromMethod(code, pattern)
-                        .orElseThrow(() -> new IllegalArgumentException("Not Found.")));
+    public static <C extends CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
+        return findCodePatternsFromField(code, filter).orElseGet(() -> findCodePatternsFromMethod(code, filter)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Code filter '%s' for %s is not found.", filter, code))));
     }
 
     @SuppressWarnings("unchecked")
@@ -102,7 +85,9 @@ public final class CodeEnumReflectionUtil {
     public static <C extends CodeEnum<C>> String getAnnotatedStringValue(C code, Class<? extends Annotation> marker, String name) {
         return findAnnotatedStringValueFromField(code, marker, name)
                 .orElseGet(() -> findAnnotatedStringValueFromMethod(code, marker, name)
-                        .orElseThrow(() -> new IllegalArgumentException("Not Found.")));
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                String.format("The field or method annotated as '%s' with name '%s' is not found in %s", marker.getName(), name, code)
+                        )));
     }
 
     private static <C extends CodeEnum<C>> Optional<String> findAnnotatedStringValueFromField(C code, Class<? extends Annotation> marker, String name) {

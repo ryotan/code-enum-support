@@ -15,15 +15,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import io.github.ryotan.code.Code;
 import io.github.ryotan.code.CodeEnum;
+import io.github.ryotan.code.CodeEnum.Filters;
 import io.github.ryotan.code.util.CodeEnumReflectionUtil;
 
 @Target({METHOD, FIELD, PARAMETER})
@@ -44,24 +44,19 @@ public @interface CodeValue {
 
     abstract class CodeEnumValidatorSupport<T> implements ConstraintValidator<CodeValue, T> {
         private Class<? extends CodeEnum> code;
-        private List<Predicate<?>> filters = new ArrayList<>();
+        private Predicate filter;
 
         @Override
         @SuppressWarnings("unchecked")
         public void initialize(CodeValue constraint) {
             this.code = CodeEnumReflectionUtil.getCodeEnumClass(constraint.value());
-            for (String s : constraint.filters()) {
-                filters.add(CodeEnumReflectionUtil.getCodePattern(code, s));
-            }
+            this.filter = Stream.of(constraint.filters()).map(s -> CodeEnumReflectionUtil.getCodeFilter(code, s))
+                    .reduce(Filters.ANY, Predicate::and);
         }
 
         @SuppressWarnings("unchecked")
-        private boolean isValidAsString(String value) {
-            Predicate predicate = CodeEnum.Filters.ANY;
-            for (Predicate p : filters) {
-                predicate = predicate.and(p);
-            }
-            return Code.contains(code, value, predicate);
+        boolean isValidAsString(String value) {
+            return Code.contains(this.code, value, this.filter);
         }
     }
 

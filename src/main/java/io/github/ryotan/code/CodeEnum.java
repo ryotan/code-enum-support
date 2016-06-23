@@ -85,10 +85,11 @@ public interface CodeEnum<C extends CodeEnum<C>> {
     }
 
     final class Filters {
+
+        public static final Predicate<? super CodeEnum<?>> ANY = c -> true;
+
         private Filters() {
         }
-
-        public static Predicate<? super CodeEnum<?>> ANY = c -> true;
 
         @SafeVarargs
         public static <T extends CodeEnum<T>> Predicate<T> include(T... includes) {

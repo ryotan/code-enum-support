@@ -63,7 +63,7 @@ import io.github.ryotan.code.CodeEnum;
 public class CodeParamConverter<C extends CodeEnum<C>> implements ParamConverter<C> {
 
     /**
-     * 変換先の{@link CodeEnum}の{@link Class}
+     * 変換先の{@link CodeEnum}の{@link Class}。
      */
     private final Class<C> code;
 

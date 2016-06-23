@@ -19,10 +19,11 @@ import io.github.ryotan.code.CodeEnum.ShortLabel;
 import io.github.ryotan.code.util.CodeEnumReflectionUtil;
 
 public final class Code {
-    private Code() {
-    }
 
     private static final Comparator<CodeEnum<?>> ORDINAL_COMPARATOR = (c1, c2) -> c1.ordinal() - c2.ordinal();
+
+    private Code() {
+    }
 
     private static boolean matches(CodeEnum<?> candidate, String value) {
         return candidate.value().equals(value);
@@ -32,7 +33,7 @@ public final class Code {
         if (code.isEnum()) {
             return Stream.of(code.getEnumConstants());
         }
-        throw new IllegalArgumentException("CodeEnum must be enum. class=[" + code + "].");
+        throw new IllegalArgumentException(String.format("CodeEnum must be enum. class=[%s].", code.getName()));
     }
 
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value) {
@@ -41,7 +42,7 @@ public final class Code {
 
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value, Predicate<? super C> filter) {
         return enums(code).filter(filter).filter(c -> matches(c, value)).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Code is not found. code=[" + code + "], value=[" + value + "]."));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Code is not found. code=[%s], value=[%s]", code.getName(), value)));
     }
 
     public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode) {
