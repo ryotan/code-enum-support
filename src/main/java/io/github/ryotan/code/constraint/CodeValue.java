@@ -16,7 +16,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -43,20 +42,21 @@ public @interface CodeValue {
     String[] filters() default {};
 
     abstract class CodeEnumValidatorSupport<T> implements ConstraintValidator<CodeValue, T> {
-        private Class<? extends CodeEnum> code;
-        private Predicate filter;
+        private Class<? extends CodeEnum<?>> code;
+        private Predicate<? super CodeEnum<?>> filter = Filters.ANY;
 
         @Override
         @SuppressWarnings("unchecked")
         public void initialize(CodeValue constraint) {
             this.code = CodeEnumReflectionUtil.getCodeEnumClass(constraint.value());
-            this.filter = Stream.of(constraint.filters()).map(s -> CodeEnumReflectionUtil.getCodeFilter(code, s))
-                    .reduce(Filters.ANY, Predicate::and);
+            for (String filter : constraint.filters()) {
+                this.filter = (CodeEnumReflectionUtil.getCodeFilter((Class) this.code, filter).and(this.filter));
+            }
         }
 
         @SuppressWarnings("unchecked")
         boolean isValidAsString(String value) {
-            return Code.contains(this.code, value, this.filter);
+            return Code.contains((Class) this.code, value, this.filter);
         }
     }
 

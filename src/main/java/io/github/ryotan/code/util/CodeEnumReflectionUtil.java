@@ -35,12 +35,12 @@ public final class CodeEnumReflectionUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static Class<? extends CodeEnum> getCodeEnumClass(Class<?> code) {
+    public static <C extends CodeEnum<C>> Class<C> getCodeEnumClass(Class<?> code) {
         if (!isValidCodeEnumClass(code)) {
             throw new IllegalArgumentException(String.format("%s is not a valid CodeEnum class. "
                     + "CodeEnum class must be enum and implement CodeEnum<SELF_TYPE>.", code.getName()));
         }
-        return (Class<? extends CodeEnum>) code;
+        return (Class<C>) code;
     }
 
     public static <C extends CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
