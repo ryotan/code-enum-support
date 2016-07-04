@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.github.ryotan.code.CodeEnum.AliasLabel;
 import io.github.ryotan.code.CodeEnum.Filters;
-import io.github.ryotan.code.CodeEnum.OptionalLabel;
 import io.github.ryotan.code.CodeEnum.ShortLabel;
 import io.github.ryotan.code.util.CodeEnumReflectionUtil;
 
@@ -77,11 +77,12 @@ public final class Code {
         return enums(code).filter(filter).anyMatch(c -> matches(c, value));
     }
 
-    public static <C extends CodeEnum<C>> String shortLabel(Class<C> code, String value, String name) {
-        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), ShortLabel.class, name);
+    public static <C extends CodeEnum<C>> String shortLabel(Class<C> code, String value) {
+        C target = Code.of(code, value);
+        return CodeEnumReflectionUtil.getAnnotatedStringValue(target, ShortLabel.class, ((Enum<?>) target).name());
     }
 
-    public static <C extends CodeEnum<C>> String optionalLabel(Class<C> code, String value, String name) {
-        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), OptionalLabel.class, name);
+    public static <C extends CodeEnum<C>> String alias(Class<C> code, String value, String aliasName) {
+        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), AliasLabel.class, aliasName);
     }
 }

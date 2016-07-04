@@ -12,25 +12,30 @@ import java.util.function.Predicate;
 import io.github.ryotan.code.CodeEnum;
 
 public enum Gender implements CodeEnum<Gender> {
-    NOT_APPLICABLE("9", "適用不能", "適用不能", "not applicable"),
-    FEMALE("2", "女性", "女", "female"),
-    MALE("1", "男性", "男", "male"),
-    NOT_KNOWN("0", "不明", "不明", "not known");
+    @ShortLabel("適用不能")
+    NOT_APPLICABLE("9", "適用不能", "not applicable"),
+
+    @ShortLabel("女")
+    FEMALE("2", "女性", "female"),
+
+    @ShortLabel("男")
+    MALE("1", "男性", "male"),
+
+    @ShortLabel("不明")
+    NOT_KNOWN("0", "不明", "not known");
 
     private final String value;
     private final String label;
-    private final String shortLabel;
 
-    @OptionalLabel
+    @AliasLabel
     public final String ENGLISH_LABEL;
 
     @Filter
-    public static final Predicate<Gender> ISO_5218 = Filters.include(MALE, FEMALE);
+    public static final Predicate<Gender> JIS_X0303 = Filters.include(MALE, FEMALE);
 
-    Gender(String value, String label, String shortLabel, String english) {
+    Gender(String value, String label, String english) {
         this.value = value;
         this.label = label;
-        this.shortLabel = shortLabel;
         this.ENGLISH_LABEL = english;
     }
 
@@ -42,10 +47,5 @@ public enum Gender implements CodeEnum<Gender> {
     @Override
     public String label() {
         return this.label;
-    }
-
-    @ShortLabel
-    public String mark() {
-        return this.shortLabel;
     }
 }
