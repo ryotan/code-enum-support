@@ -11,7 +11,9 @@ import io.github.ryotan.code.example.Gender
 import io.github.ryotan.code.example.UserType
 import spock.lang.Specification
 
-
+/**
+ * Specification class of {@link CodeEnum}
+ */
 class CodeEnumSpec extends Specification {
   def "CodeEnum#inは、自分自身が引数に含まれる場合のみtrueを返すこと。"() {
     expect:

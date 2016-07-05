@@ -95,8 +95,8 @@ import java.util.stream.Stream;
  * {@link AliasLabel}アノテーションを付与したフィールドあるいはメソッドの名称を設定してください。
  * </p>
  *
- *
  * @param <C> 実装クラス自身の型
+ * @author ryotan
  * @see Code
  * @see Filters
  */
@@ -211,6 +211,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
 
     /**
      * コードの論理名の短縮名を表すために利用するアノテーションです。
+     * （とあるFWのためだけに用意されています。別名が必要な場合は、{@link AliasLabel} を利用したほうが統一感があるので良いと思います。）
      * <p>
      * 次のように、Enum定数に対してアノテーションを付けることで、短縮論理名を設定することが出来ます。
      * </p>
@@ -221,10 +222,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * <p>
      * なお、アノテーションを付けるフィールドは{@link String}型でなくてはいけません。
      * </p>
-     *
-     * @deprecated 後方互換製のためだけに用意されています。別名が必要な場合は、{@link AliasLabel} を利用することを推奨します。
      */
-    @Deprecated
     @Target({FIELD})
     @Retention(RUNTIME)
     @Documented

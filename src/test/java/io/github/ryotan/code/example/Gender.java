@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import io.github.ryotan.code.CodeEnum;
 
 public enum Gender implements CodeEnum<Gender> {
-    @ShortLabel("適用不能")
     NOT_APPLICABLE("9", "適用不能", "not applicable"),
 
     @ShortLabel("女")
@@ -21,7 +20,6 @@ public enum Gender implements CodeEnum<Gender> {
     @ShortLabel("男")
     MALE("1", "男性", "male"),
 
-    @ShortLabel("不明")
     NOT_KNOWN("0", "不明", "not known");
 
     private final String value;

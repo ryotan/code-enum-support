@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import io.github.ryotan.code.CodeEnum;
 import io.github.ryotan.code.CodeEnum.Filter;
+import io.github.ryotan.code.CodeEnum.ShortLabel;
 
 public final class CodeEnumReflectionUtil {
     private CodeEnumReflectionUtil() {
@@ -82,12 +83,25 @@ public final class CodeEnumReflectionUtil {
         return false;
     }
 
+    public static <C extends CodeEnum<C>> String getShortLabelValue(C code, String name) {
+        try {
+            final Field field = code.getClass().getField(name);
+            final ShortLabel[] shortLabel = field.getAnnotationsByType(ShortLabel.class);
+            if (shortLabel.length != 0) {
+                return shortLabel[0].value();
+            }
+        } catch (NoSuchFieldException e) {
+            // nop
+        }
+        throw new IllegalArgumentException(String.format("%s.%s is not annotated with '@%s'.",
+                code.getClass().getSimpleName(), code, ShortLabel.class.getSimpleName()));
+    }
+
     public static <C extends CodeEnum<C>> String getAnnotatedStringValue(C code, Class<? extends Annotation> marker, String name) {
         return findAnnotatedStringValueFromField(code, marker, name)
                 .orElseGet(() -> findAnnotatedStringValueFromMethod(code, marker, name)
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                String.format("The field or method annotated as '%s' with name '%s' is not found in %s", marker.getName(), name, code)
-                        )));
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("The field or method annotated as '@%s' with name '%s'" +
+                                " is not found in %s.%s", marker.getSimpleName(), name, code.getClass().getSimpleName(), code))));
     }
 
     private static <C extends CodeEnum<C>> Optional<String> findAnnotatedStringValueFromField(C code, Class<? extends Annotation> marker, String name) {

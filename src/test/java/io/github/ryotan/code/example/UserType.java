@@ -11,8 +11,8 @@ import io.github.ryotan.code.CodeEnum;
 
 public enum UserType implements CodeEnum<UserType> {
     ADMINISTRATOR("1", "管理者"),
-    OPERATOR("1", "運用者"),
-    MEMBER("1", "利用者");
+    OPERATOR("2", "運用者"),
+    MEMBER("3", "利用者");
 
     private final String value;
     private final String label;
@@ -20,6 +20,11 @@ public enum UserType implements CodeEnum<UserType> {
     UserType(String value, String label) {
         this.value = value;
         this.label = label;
+    }
+
+    @AliasLabel
+    public String englishLabel() {
+        return name();
     }
 
     @Override
