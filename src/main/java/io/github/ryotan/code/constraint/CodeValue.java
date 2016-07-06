@@ -31,7 +31,7 @@ import io.github.ryotan.code.util.CodeEnumReflectionUtil;
 @Constraint(validatedBy = {CodeValue.CodeValueValidator.class, CodeValue.CodeEnumValidator.class})
 public @interface CodeValue {
 
-    String message() default "{pw.itr0.poc.code.constraint.CodeValue.message}";
+    String message() default "{io.github.ryotan.code.constraint.CodeValue.message}";
 
     Class<?>[] groups() default {};
 
@@ -73,7 +73,7 @@ public @interface CodeValue {
         public boolean isValid(CodeEnum value, ConstraintValidatorContext context) {
             final boolean isValid = value != null && super.isValidAsString(value.value());
             if (!isValid) {
-                context.buildConstraintViolationWithTemplate("{pw.itr0.poc.code.constraint.CodeValue.message.convertFailure}")
+                context.buildConstraintViolationWithTemplate("{io.github.ryotan.code.constraint.CodeValue.message.convertFailure}")
                         .addBeanNode()
                         .inIterable()
                         .addConstraintViolation();
