@@ -13,41 +13,58 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.github.ryotan.code.CodeEnum.AliasLabel;
 import io.github.ryotan.code.CodeEnum.Filters;
-import io.github.ryotan.code.CodeEnum.OptionalLabel;
 import io.github.ryotan.code.CodeEnum.ShortLabel;
 import io.github.ryotan.code.util.CodeEnumReflectionUtil;
 
 /**
- * コード値に対する操作を行うクラス
+ * {@link CodeEnum}を扱うためのユーティリティクラスです。
+ * <p>
+ * {@link CodeEnum}のクラスとコード値から{@link CodeEnum}のEnum定数を生成したり、ある{@link CodeEnum}に含まれるEnum定数の一覧を取得したり出来ます。
+ * </p>
+ * <p>
+ * {@link Class}を引数に取るものは、与えられた{@link Class}がEnum型でない（{@link Class#isEnum()}が{@code false}を返す）場合には、
+ * {@link IllegalArgumentException}を送出します。
+ * </p>
  *
+ * @author ryotan
  */
 public final class Code {
 
-    private static final Comparator<CodeEnum<?>> ORDINAL_COMPARATOR = (c1, c2) -> c1.ordinal() - c2.ordinal();
-    
     /**
-     * コンストラクタ
+     * {@link Enum#ordinal()}で順序を比較する{@link Comparator}
+     */
+    private static final Comparator<CodeEnum<?>> ORDINAL_COMPARATOR = (c1, c2) -> c1.ordinal() - c2.ordinal();
+
+    /**
+     * hidden constructor for utility class.
      */
     private Code() {
     }
 
-   /**
-    * コード値が特定の値と一致するか否かを判定する。
-    * 
-    * @param candidate コード値
-    * @param value 判定対象の値
-    * @return 一致する場合true、一致しない場合false
-    */
+    /**
+     * {@code candidate}のコード値が{@code value}と一致する場合は{@code true}を返します。
+     *
+     * @param candidate 比較対象の{@link CodeEnum}
+     * @param value     比較対象のコード値
+     * @return {@code candidate}のコード値が{@code value}と一致する場合は{@code true}
+     */
     private static boolean matches(CodeEnum<?> candidate, String value) {
         return candidate.value().equals(value);
     }
 
     /**
-     * コードが示すすべての値を取得する。
-     * 
-     * @param code コード
-     * @return コード値のストリート
+     * {@code code}に含まれるEnum定数を{@link Stream}として返却します。
+     * <p>
+     * {@code code}がEnum型出ない場合は、{@link IllegalArgumentException}を送出します。
+     * </p>
+     *
+     * @param code 対象の{@link CodeEnum}のクラス
+     * @param <C>  対象の{@link CodeEnum}の型
+     * @return {@code C}に含まれるEnum定数の{@link Stream}
+     *
+     * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
     private static <C extends CodeEnum<C>> Stream<C> enums(Class<C> code) {
         if (code.isEnum()) {
@@ -57,23 +74,36 @@ public final class Code {
     }
 
     /**
-     * コード値のうちすべての範囲の中で特定の値と一致するコード値を取得する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @return コード値のストリート
+     * {@code code}クラスの{@link CodeEnum}で、コード値（{@link CodeEnum#value()}の値）が{@code value}に一致するコードを返却します。
+     * <p>
+     * 一致するコードが{@code C}の中に見つからなかった場合は、{@link IllegalArgumentException}を送出します。
+     * </p>
+     *
+     * @param code  対象の{@link CodeEnum}のクラス
+     * @param value 取得したい{@link CodeEnum}がもつコード値
+     * @param <C>   対象の{@link CodeEnum}の型
+     * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
+     *
+     * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value) {
         return of(code, value, Filters.ANY);
     }
 
     /**
-     * コード値のうち指定された範囲の中で特定の値と一致するコード値を取得する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param filter 指定範囲
-     * @return コード値のストリート
+     * {@code code}クラスの{@link CodeEnum}のうち、{@code filter}を満たすもので、
+     * コード値（{@link CodeEnum#value()}の値）が{@code value}に一致するコードを返却します。
+     * <p>
+     * 一致するコードが{@code C}の中に見つからなかった場合は、{@link IllegalArgumentException}を送出します。
+     * </p>
+     *
+     * @param code   対象の{@link CodeEnum}のクラス
+     * @param value  取得したい{@link CodeEnum}がもつコード値
+     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param <C>    対象の{@link CodeEnum}の型
+     * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
+     *
+     * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value, Predicate<? super C> filter) {
         return enums(code).filter(filter).filter(c -> matches(c, value)).findAny()
@@ -81,120 +111,145 @@ public final class Code {
     }
 
     /**
-     * コード値のうちすべての範囲の中で特定の値と一致するコード値を取得する。
-     * 一致しない場合デフォルトのコード値を返却する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param defaultCode デフォルトのコード値
-     * @return 特定の値と一致するコード値もしくはデフォルトのコード値
+     * {@code code}クラスの{@link CodeEnum}で、コード値（{@link CodeEnum#value()}の値）が{@code value}に一致するコードを返却します。
+     * <p>
+     * 一致するコードが{@code C}の中に見つからなかった場合は、{@code defaultCode}をそのまま返却します。
+     * </p>
+     *
+     * @param code  対象の{@link CodeEnum}のクラス
+     * @param value 取得したい{@link CodeEnum}がもつコード値
+     * @param <C>   対象の{@link CodeEnum}の型
+     * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
      */
     public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode) {
         return or(code, value, defaultCode, Filters.ANY);
     }
 
     /**
-     *  コード値のうち指定された範囲の中で特定の値と一致するコード値を取得する。
-     *  一致しない場合デフォルトのコード値を返却する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param defaultCode デフォルトのコード値
-     * @param filter 指定範囲
-     * @return 特定の値と一致するコード値もしくはデフォルトのコード値
+     * {@code code}クラスの{@link CodeEnum}のうち、{@code filter}を満たすもので、
+     * コード値（{@link CodeEnum#value()}の値）が{@code value}に一致するコードを返却します。
+     * <p>
+     * 一致するコードが{@code C}の中に見つからなかった場合は、{@code defaultCode}をそのまま返却します。
+     * </p>
+     *
+     * @param code   対象の{@link CodeEnum}のクラス
+     * @param value  取得したい{@link CodeEnum}がもつコード値
+     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param <C>    対象の{@link CodeEnum}の型
+     * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
      */
     public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode, Predicate<? super C> filter) {
         return enums(code).filter(filter).filter(c -> matches(c, value)).findAny().orElse(defaultCode);
     }
 
     /**
-     * コード値のうちすべての範囲内にある値を昇順にソートしたリストを取得する。
-     * 
-     * @param code
-     * @return
+     * {@link C}に含まれるコードのリストを返します。返されるリストは{@link Enum#ordinal()}でソートされています。
+     *
+     * @param code コードのリストを取得する対象の{@link CodeEnum}
+     * @param <C>  コードのリストを取得する対象の型
+     * @return {@link C}に含まれるコードのリスト
      */
     public static <C extends CodeEnum<C>> List<C> values(Class<C> code) {
         return values(code, Filters.ANY, ORDINAL_COMPARATOR);
     }
 
     /**
-     * コード値のうち指定された範囲内にある値を昇順にソートしたリストを取得する。
-     * 
-     * @param code コード値
-     * @param filter 指定範囲
-     * @return コード値のリスト
+     * {@link C}に含まれるコードのうち、{@code filter}を満たすコードのリストを返します。返されるリストは{@link Enum#ordinal()}でソートされています。
+     *
+     * @param code   コードのリストを取得する対象の{@link CodeEnum}
+     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param <C>    コードのリストを取得する対象の型
+     * @return {@link C}に含まれるコードのリスト
      */
     public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter) {
         return values(code, filter, ORDINAL_COMPARATOR);
     }
 
     /**
-     * コード値のうちすべての範囲内にある値をソートしたリストを取得する。
-     * 
-     * @param code コード値
-     * @param sorter ソート条件
-     * @return コード値のリスト
+     * {@link C}に含まれるコードのリストを返します。返されるリストは{@code sorter}でソートされています。
+     *
+     * @param code   コードのリストを取得する対象の{@link CodeEnum}
+     * @param sorter コードのリストをソートするのに利用する{@link Comparator}
+     * @param <C>    コードのリストを取得する対象の型
+     * @return {@link C}に含まれるコードのリスト
      */
-   public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Comparator<? super C> sorter) {
+    public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Comparator<? super C> sorter) {
         return values(code, Filters.ANY, sorter);
     }
 
     /**
-     * コード値のうち指定された範囲内にある値をソートしたリストを取得する。
-     * 
-     * @param code コード値
-     * @param filter 指定範囲
-     * @param sorter ソート条件
-     * @return コード値のリスト
+     * {@link C}に含まれるコードのうち、{@code filter}を満たすコードのリストを返します。返されるリストは{@code sorter}でソートされています。
+     *
+     * @param code   コードのリストを取得する対象の{@link CodeEnum}
+     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param sorter コードのリストをソートするのに利用する{@link Comparator}
+     * @param <C>    コードのリストを取得する対象の型
+     * @return {@link C}に含まれるコードのリスト
      */
     public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter, Comparator<? super C> sorter) {
         return enums(code).filter(filter).sorted(sorter).collect(Collectors.toList());
     }
 
     /**
-     * コード値の中にすべての範囲にある特定の値が存在するか否かを判定する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @return 存在する場合true、存在しない場合false
+     * {@code C}にコード値が{@code value}であるコードが存在するかどうかを判定します。
+     *
+     * @param code  対象のコードのクラス
+     * @param value 含まれるかどうかを判定するコード値
+     * @param <C>   対象のコードを表す型
+     * @return {@code C}のコードにコード値が{@code value}であるものが存在する場合{@code true}
      */
     public static <C extends CodeEnum<C>> boolean contains(Class<C> code, String value) {
         return contains(code, value, Filters.ANY);
     }
 
     /**
-     * コード値の中に指定された範囲にある特定の値が存在するか否かを判定する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param filter 指定範囲
-     * @return 存在する場合true、存在しない場合false
+     * {@code C}のコードのうち、{@code filter}を満たすものでコード値が{@code value}であるコードが存在するかどうかを判定します。
+     *
+     * @param code  対象のコードのクラス
+     * @param value 含まれるかどうかを判定するコード値
+     * @param <C>   対象のコードを表す型
+     * @return {@code C}のコードに{@code filter}を満たし、コード値が{@code value}であるものが存在する場合{@code true}
      */
     public static <C extends CodeEnum<C>> boolean contains(Class<C> code, String value, Predicate<? super C> filter) {
         return enums(code).filter(filter).anyMatch(c -> matches(c, value));
     }
 
     /**
-     * コード値の特定の値のアノテーション（ショートラベル）を取得する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param name アノテーション取得対象のフィールド名もしくはメソッド名
-     * @return ショートラベルの値
+     * {@code C}のコードのうち、コード値が{@code value}であるコードの短縮論理名を取得します。
+     * （とあるFWのためだけに用意されています。別名が必要な場合は、{@link AliasLabel} を利用したほうが統一感があるので良いと思います。）
+     *
+     * @param code  対象のコードのクラス
+     * @param value 短縮論理名を取得したいコードのコード値
+     * @param <C>   対象のコードを表す型
+     * @return コード値が{@code value}であるコードの短縮論理名
+     *
+     * @throws IllegalArgumentException コードに{@link ShortLabel}が付けられていない、
+     *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
+     * @see ShortLabel
+     * @see AliasLabel
      */
-    public static <C extends CodeEnum<C>> String shortLabel(Class<C> code, String value, String name) {
-        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), ShortLabel.class, name);
+    public static <C extends CodeEnum<C>> String shortLabel(Class<C> code, String value) {
+        C target = Code.of(code, value);
+        return CodeEnumReflectionUtil.getShortLabelValue(target, ((Enum<?>) target).name());
     }
 
     /**
-     * コード値の特定の値のアノテーション（オプションラベル）を取得する。
-     * 
-     * @param code コード値
-     * @param value 判定対象の値
-     * @param name アノテーション取得対象のフィールド名もしくはメソッド名
-     * @return オプションラベル
+     * {@code C}のコードのうち、コード値が{@code value}であるコードの別名を取得します。
+     * <p>
+     * 別名は、対象のコードの{@link AliasLabel}が付けられていて名前が{@code aliasName}と完全一致するフィールドもしくはメソッドの値として取得します。
+     * </p>
+     *
+     * @param code      対象のコードのクラス
+     * @param value     短縮論理名を取得したいコードのコード値
+     * @param aliasName {@link AliasLabel}の付けられているフィールド名もしくはメソッド名
+     * @param <C>       対象のコードを表す型
+     * @return コード値が{@code value}であるコードの短縮論理名
+     *
+     * @throws IllegalArgumentException {@link AliasLabel}が付けられていて名前が{@code aliasName}と完全一致するフィールドもしくはメソッドがない、
+     *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
+     * @see AliasLabel
      */
-    public static <C extends CodeEnum<C>> String optionalLabel(Class<C> code, String value, String name) {
-        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), OptionalLabel.class, name);
+    public static <C extends CodeEnum<C>> String alias(Class<C> code, String value, String aliasName) {
+        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), AliasLabel.class, aliasName);
     }
 }

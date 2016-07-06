@@ -28,7 +28,7 @@ import io.github.ryotan.code.CodeEnum;
  *     private final String label;
  *     private final String shortLabel;
  *
- *     &#64;OptionalLabel
+ *     &#64;AliasLabel
  *     public final String ENGLISH_LABEL;
  *
  *     &#64;Filter
