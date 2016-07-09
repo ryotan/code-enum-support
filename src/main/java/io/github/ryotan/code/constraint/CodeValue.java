@@ -50,12 +50,12 @@ public @interface CodeValue {
         public void initialize(CodeValue constraint) {
             this.code = CodeEnumReflectionUtil.getCodeEnumClass(constraint.value());
             for (String filter : constraint.filters()) {
-                this.filter = (CodeEnumReflectionUtil.getCodeFilter((Class) this.code, filter).and(this.filter));
+                this.filter = CodeEnumReflectionUtil.getCodeFilter((Class) this.code, filter).and(this.filter);
             }
         }
 
         @SuppressWarnings("unchecked")
-        boolean isValidAsString(String value) {
+        protected boolean isValidAsString(String value) {
             return Code.contains((Class) this.code, value, this.filter);
         }
     }
