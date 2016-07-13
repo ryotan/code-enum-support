@@ -63,7 +63,7 @@ public final class CodeEnumReflectionUtil {
      * </p>
      * 
      * @param code コード値を表すクラス
-     * @return <C> {@code CodeEnum}の実装クラス
+     * @return {@code CodeEnum}の実装クラス
      * 
      * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
@@ -82,7 +82,7 @@ public final class CodeEnumReflectionUtil {
      * {@code filter}が{@link CodeEnum}のクラスに存在ない場合、{@link IllegalArgumentException}を送出します。
      * </p>
      * 
-     * @param <C> code 対象の{@link CodeEnum}のクラス
+     * @param code 対象の{@link CodeEnum}のクラス
      * @param filter   対象の{@link CodeEnum}をフィルタリングするフィルター名
      * @return 指定されたフィルター名のコードパターン
      * 
@@ -96,7 +96,7 @@ public final class CodeEnumReflectionUtil {
     /** 
      * {@code code}クラスで{@link Filter}アノテーションが付与されたフィールドのうち、{@code name}と一致するフィールドを返却します。
      * 
-     * @param <C> code 対象の{@link CodeEnum}のクラス
+     * @param code 対象の{@link CodeEnum}のクラス
      * @param name     取得した{@link CodeEnum}がもつフィールド名
      * @return フィールドオブジェクト {@link Predicate}
      *  
