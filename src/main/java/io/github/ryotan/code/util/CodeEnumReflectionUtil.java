@@ -24,7 +24,7 @@ import io.github.ryotan.code.CodeEnum.ShortLabel;
 
 
 /**
- * {@link CodeEnum}型のクラスを扱うためのクラスです。
+ * {@link CodeEnum}のリフレクション関連のユーティリティクラスです。
  * <p>
  * パラメータとして与えられたクラスが{@link CodeEnum}型のクラスである場合、コードパターンや短縮論理名を取得します。
  * </p>
@@ -42,10 +42,10 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code aClass}が{@link Enum}もしくは{@link CodeEnum}の実装クラスである場合{@code true}
+     * {@link Enum}かつ{@link CodeEnum}のタイプパラメータが{@code aClass}と一致する場合{@code true}を返却します。
      * 
      * @param aClass 判定対象のクラス
-     * @return {@link Enum}もしくは{@link CodeEnum}の実装クラスである場合{@code true}, それ以外の場合{@code false}
+     * @return タイプパラメータが{@code aClass}と一致する場合{@code true}、{@code aClass}が{@link Enum}または{@link CodeEnum}を継承していない場合{@code false}
      */
     public static boolean isValidCodeEnumClass(Class<?> aClass) {
         if (!Enum.class.isAssignableFrom(aClass) || !CodeEnum.class.isAssignableFrom(aClass)) {
@@ -59,7 +59,7 @@ public final class CodeEnumReflectionUtil {
     /**
      * {@link CodeEnum}の実装クラスを返却します。
      * <p>
-     * {@code code}がEnum型出ない場合は、{@link IllegalArgumentException}を送出します。
+     * {@code code}がEnum型でない場合は、{@link IllegalArgumentException}を送出します。
      * </p>
      * 
      * @param code コード値を表すクラス
@@ -77,7 +77,7 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code code}クラスの{@link CodeEnum}で、フィールやメソッドに指定されたフィルター名が存在した場合、そのオブジェクトを返却します。
+     * {@code code}クラスの{@link CodeEnum}で、フィールドやメソッドに指定されたフィルター名が存在した場合、そのオブジェクトを返却します。
      * <p>
      * {@code filter}が{@link CodeEnum}のクラスに存在ない場合、{@link IllegalArgumentException}を送出します。
      * </p>
@@ -94,7 +94,7 @@ public final class CodeEnumReflectionUtil {
     }
 
     /** 
-     * {@code code}クラスの{@link CodeEnum}に宣言されたフィールドのうち、{@code name}と一致するフィールドを返却します。
+     * {@code code}クラスで{@link Filter}アノテーションが付与されたフィールドのうち、{@code name}と一致するフィールドを返却します。
      * 
      * @param <C> code 対象の{@link CodeEnum}のクラス
      * @param name     取得した{@link CodeEnum}がもつフィールド名
@@ -115,9 +115,9 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code code}クラスの{@link CodeEnum}のうち、メソッド名が{@code name}と一致するメソッド名を返却します。
+     * {@code code}クラスで{@link Filter}アノテーションが付与されたメソッドのうち、{@code name}と一致するメソッド名を返却します。
      * 
-     * @param <C> code 対象の{@link CodeEnum}のクラス
+     * @param code 対象の{@link CodeEnum}のクラス
      * @param name     取得した{@link CodeEnum}がもつメソッド名
      * @return コードパターン
      */
@@ -150,7 +150,7 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code C}のコードのうち、短縮論理名が{@code name}と一致するコード値を取得します。
+     * {@code C}のコードのうち、{@code name}と一致する短縮論理名を取得します。
      * 
      * @param code 対象のコードのクラス
      * @param name 短縮論理名
@@ -173,7 +173,7 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code code}クラスのうち、{@code name}に一致するフィールドもしくはメソッドに付与されたアノテーションの中から{@code maker}に一致する値を取得します。
+     * {@code code}クラスのうち、{@code maker}アノテーションが付与された{@code name}のフィールドもしくはメソッドの値を取得します。
      * <p>
      * {@code code}の{@code name}にアノテーションが見つからなかった場合は、{@link IllegalArgumentException}
      * </p>
