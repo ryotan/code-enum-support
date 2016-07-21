@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.16.8</version>
+      <version>1.16.10</version>
       <scope>provided</scope>
     </dependency>
 
@@ -114,7 +114,7 @@
     <dependency> <!-- enables mocking of classes (in addition to interfaces) -->
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>
-      <version>3.2.3</version>
+      <version>3.2.4</version>
       <scope>test</scope>
     </dependency>
     <dependency> <!-- enables mocking of classes without default constructor (together with CGLIB) -->
@@ -257,7 +257,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
