@@ -4,6 +4,9 @@ machine:
   java:
     version: oraclejdk8
   services:
+  environment:
+    JPM_HOME: ${HOME}/jpm
+    PATH: ${JPM_HOME}/bin:${PATH}
 
 general:
   branches:
@@ -14,8 +17,7 @@ dependencies:
   pre:
     - bash ci/install-coverage-reporter.sh
   cache_directories:
-    - ~/bin
-    - ~/.jpm
+    - ${JPM_HOME}
 
 test:
   post:

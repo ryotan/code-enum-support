@@ -7,5 +7,5 @@ if [[ ! $(builtin command -v jpm) ]]; then
 fi
 
 if [[ ! $(builtin command -v codacy-coverage-reporter) ]]; then
-  sudo jpm install com.codacy:codacy-coverage-reporter:assembly
+  jpm install com.codacy:codacy-coverage-reporter:assembly
 fi
