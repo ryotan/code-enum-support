@@ -16,6 +16,7 @@ general:
 dependencies:
   pre:
     - bash ci/install-coverage-reporter.sh
+    - mvn dependency:resolve-plugins
   cache_directories:
     - ${JPM_HOME}
 
