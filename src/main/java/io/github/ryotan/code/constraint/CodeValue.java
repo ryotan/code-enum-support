@@ -71,7 +71,7 @@ public @interface CodeValue {
 
         @Override
         public boolean isValid(CodeEnum value, ConstraintValidatorContext context) {
-            final boolean isValid = value != null && super.isValidAsString(value.value());
+            final boolean isValid = value == null || super.isValidAsString(value.value());
             if (!isValid) {
                 context.buildConstraintViolationWithTemplate("{io.github.ryotan.code.constraint.CodeValue.message.convertFailure}")
                         .addBeanNode()
