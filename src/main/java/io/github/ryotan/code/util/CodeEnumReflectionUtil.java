@@ -34,7 +34,7 @@ import io.github.ryotan.code.CodeEnum.ShortLabel;
  *
  */
 public final class CodeEnumReflectionUtil {
-    
+
     /**
      * hidden constructor for utility class.
      */
@@ -43,7 +43,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@link Enum}かつ{@link CodeEnum}のタイプパラメータが{@code aClass}と一致する場合{@code true}を返却します。
-     * 
+     *
      * @param aClass 判定対象のクラス
      * @return タイプパラメータが{@code aClass}と一致する場合{@code true}、{@code aClass}が{@link Enum}または{@link CodeEnum}を継承していない場合{@code false}
      */
@@ -61,10 +61,10 @@ public final class CodeEnumReflectionUtil {
      * <p>
      * {@code code}がEnum型でない場合は、{@link IllegalArgumentException}を送出します。
      * </p>
-     * 
+     *
      * @param code コード値を表すクラス
      * @return {@code CodeEnum}の実装クラス
-     * 
+     *
      * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
     @SuppressWarnings("unchecked")
@@ -81,11 +81,11 @@ public final class CodeEnumReflectionUtil {
      * <p>
      * {@code filter}が{@link CodeEnum}のクラスに存在ない場合、{@link IllegalArgumentException}を送出します。
      * </p>
-     * 
+     *
      * @param code 対象の{@link CodeEnum}のクラス
      * @param filter   対象の{@link CodeEnum}をフィルタリングするフィルター名
      * @return 指定されたフィルター名のコードパターン
-     * 
+     *
      * @throws IllegalArgumentException {@code filter}が{@link CodeEnum}のクラスに存在ない場合
      */
     public static <C extends CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
@@ -93,13 +93,13 @@ public final class CodeEnumReflectionUtil {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Code filter '%s' for %s is not found.", filter, code))));
     }
 
-    /** 
+    /**
      * {@code code}クラスで{@link Filter}アノテーションが付与されたフィールドのうち、{@code name}と一致するフィールドを返却します。
-     * 
+     *
      * @param code 対象の{@link CodeEnum}のクラス
      * @param name     取得した{@link CodeEnum}がもつフィールド名
      * @return フィールドオブジェクト {@link Predicate}
-     *  
+     *
      */
     @SuppressWarnings("unchecked")
     private static <C extends CodeEnum<C>> Optional<Predicate<C>> findCodePatternsFromField(Class<C> code, String name) {
@@ -116,7 +116,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code code}クラスで{@link Filter}アノテーションが付与されたメソッドのうち、{@code name}と一致するメソッド名を返却します。
-     * 
+     *
      * @param code 対象の{@link CodeEnum}のクラス
      * @param name     取得した{@link CodeEnum}がもつメソッド名
      * @return コードパターン
@@ -136,7 +136,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code type}が{@link ParameterizedType}のインスタンスで、型名が{@code code}と一致する場合{@code true}を返却します。
-     * 
+     *
      * @param type 対象の型
      * @param code 対象のクラス
      * @return {@code type}の型名が{@code code}と一致する場合{@code true}
@@ -151,11 +151,11 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code C}のコードのうち、{@code name}と一致する短縮論理名を取得します。
-     * 
+     *
      * @param code 対象のコードのクラス
      * @param name 短縮論理名
      * @return 短縮論理名が示す値
-     * 
+     *
      * @throws IllegalArgumentException {@code C}に短縮論理名が付与されている場合
      */
     public static <C extends CodeEnum<C>> String getShortLabelValue(C code, String name) {
@@ -177,12 +177,12 @@ public final class CodeEnumReflectionUtil {
      * <p>
      * {@code code}の{@code name}にアノテーションが見つからなかった場合は、{@link IllegalArgumentException}
      * </p>
-     * 
+     *
      * @param code   対象の{@code CodeEnum}クラス
      * @param marker 対象のアノテーション
      * @param name   対象のフィールド名もしくはメソッド名
      * @return {@code code}の{@code name}に付与されているアノテーションの値
-     * 
+     *
      * @throws IllegalArgumentException {@code code}の{@code name}にアノテーションが付与されていない場合
      */
     public static <C extends CodeEnum<C>> String getAnnotatedStringValue(C code, Class<? extends Annotation> marker, String name) {
@@ -194,7 +194,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code code}クラスのうち、{@code name}に一致するフィールドから{@code maker}が付与されたアノテーションの名称を取得します。
-     * 
+     *
      * @param code   対象の{@code CodeEnum}クラス
      * @param marker 対象のアノテーション名
      * @param name   対象のフィールド名
@@ -214,7 +214,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code code}クラスのうち、{@code name}に一致するメソッドから{@code maker}が付与されたアノテーションの名称を取得します。
-     * 
+     *
      * @param code   対象の{@code CodeEnum}クラス
      * @param marker 対象のアノテーション名
      * @param name   対象のフィールド名
@@ -234,7 +234,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * フィールド{@code field}にアノテーション{@code maker}が付与されているかつ、{@code field}の型が{@code expectedClass}の型と一致している場合{@code ture}返却します。
-     * 
+     *
      * @param field         対象のフィールド
      * @param marker        対象のアノテーション
      * @param expectedClass 比較対象のクラス
@@ -257,7 +257,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * アノテーション{@code maker}が{@code annotated}要素に付与されている場合{@code true}を返却します。
-     * 
+     *
      * @param annotated 対象の要素
      * @param marker 対象のアノテーション
      * @return {@code annotated}に{@code maker}が付与されている場合{@code true}
@@ -267,8 +267,8 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code gif}が{@link CodeEum}型の場合{@code true}を返却します。
-     * 
+     * {@code gif}が{@link CodeEnum}型の場合{@code true}を返却します。
+     *
      * @param gif 比較対象の型
      * @return {@code gif}が{@link CodeEnum}型の場合{@code true}
      */
@@ -278,7 +278,7 @@ public final class CodeEnumReflectionUtil {
 
     /**
      * {@code aClass}の型が{@code gif}の型と一致する場合{@code ture}を返却します。
-     * 
+     *
      * @param gif    対象の型
      * @param aClass 比較対象のクラス
      * @return {@code aClass}の型が{@code gif}の型と一致する場合{@code ture}
