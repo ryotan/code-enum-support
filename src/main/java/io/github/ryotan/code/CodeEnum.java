@@ -96,7 +96,7 @@ import java.util.stream.Stream;
  * </p>
  *
  * @param <C> 実装クラス自身の型
- *
+ * @author ryotan
  * @see Code
  * @see Filters
  */
@@ -127,7 +127,6 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * コードが{@code codes}で与えられたコードに含まれているかどうかを返します。
      *
      * @param codes 判定対象のコードの集合
-     *
      * @return コードが {@code codes} に含まれる場合 {@code true}
      */
     @SuppressWarnings("unchecked")
@@ -139,7 +138,6 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * コードが{@code codes}で与えられたコードに含まれないかどうかを返します。
      *
      * @param codes 判定対象のコードの集合
-     *
      * @return コードが {@code codes} に含まれない場合 {@code true}
      */
     @SuppressWarnings("unchecked")
@@ -149,6 +147,8 @@ public interface CodeEnum<C extends CodeEnum<C>> {
 
     /**
      * {@link CodeEnum}のフィルタリングをする{@link Predicate}を楽に生成できるようにするユーティリティクラスです。
+     *
+     * @author ryotan
      */
     final class Filters {
 
@@ -168,7 +168,6 @@ public interface CodeEnum<C extends CodeEnum<C>> {
          *
          * @param includes 判定対象のコードの集合
          * @param <T>      判定対象のコードの型
-         *
          * @return {@code includes}に含まれる{@code T}のEnumが渡されたときに{@code true}を返す{@link Predicate}
          */
         @SafeVarargs
@@ -181,7 +180,6 @@ public interface CodeEnum<C extends CodeEnum<C>> {
          *
          * @param excludes 判定対象のコードの集合
          * @param <T>      判定対象のコードの型
-         *
          * @return {@code excludes}に含まれない{@code T}のEnumが渡されたときに{@code true}を返す{@link Predicate}
          */
         @SafeVarargs
@@ -207,6 +205,8 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * </p>
      * <pre><code class="java">
      * </code></pre>
+     *
+     * @author ryotan
      */
     @Target({METHOD, FIELD})
     @Retention(RUNTIME)
@@ -227,6 +227,8 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * <p>
      * なお、アノテーションを付けるフィールドは{@link String}型でなくてはいけません。
      * </p>
+     *
+     * @author ryotan
      */
     @Target(FIELD)
     @Retention(RUNTIME)
@@ -269,6 +271,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * Code.aliasLabel(Gender.class, "1", "englishLabel");
      * </code></pre>
      *
+     * @author ryotan
      * @see Code#alias(Class, String, String)
      */
     @Target({METHOD, FIELD})

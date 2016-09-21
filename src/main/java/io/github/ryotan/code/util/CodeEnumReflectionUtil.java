@@ -32,6 +32,7 @@ import io.github.ryotan.code.CodeEnum.ShortLabel;
  * {@link Class}を引数に取るものは、与えられた{@link Class}がCodeEnum型でない場合には、{@link IllegalArgumentException}を送出します。
  * </p>
  *
+ * @author ryotan
  */
 public final class CodeEnumReflectionUtil {
 
@@ -79,14 +80,14 @@ public final class CodeEnumReflectionUtil {
     /**
      * {@code code}クラスの{@link CodeEnum}で、フィールドやメソッドに指定されたフィルター名が存在した場合、そのオブジェクトを返却します。
      * <p>
-     * {@code filter}が{@link CodeEnum}のクラスに存在ない場合、{@link IllegalArgumentException}を送出します。
+     * {@code filter}が{@link CodeEnum}のクラスに存在しない場合、{@link IllegalArgumentException}を送出します。
      * </p>
      *
      * @param code 対象の{@link CodeEnum}のクラス
      * @param filter   対象の{@link CodeEnum}をフィルタリングするフィルター名
      * @return 指定されたフィルター名のコードパターン
      *
-     * @throws IllegalArgumentException {@code filter}が{@link CodeEnum}のクラスに存在ない場合
+     * @throws IllegalArgumentException {@code filter}が{@link CodeEnum}のクラスに存在しない場合
      */
     public static <C extends CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
         return findCodePatternsFromField(code, filter).orElseGet(() -> findCodePatternsFromMethod(code, filter)
@@ -233,23 +234,23 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * フィールド{@code field}にアノテーション{@code maker}が付与されているかつ、{@code field}の型が{@code expectedClass}の型と一致している場合{@code ture}返却します。
+     * フィールド{@code field}にアノテーション{@code maker}が付与されているかつ、{@code field}の型が{@code expectedClass}の型と一致している場合{@code true}返却します。
      *
      * @param field         対象のフィールド
      * @param marker        対象のアノテーション
      * @param expectedClass 比較対象のクラス
-     * @return {@code maker}が[{@code field}に付与されていれば{@code ture}
+     * @return {@code maker}が[{@code field}に付与されていれば{@code true}
      */
     private static boolean isTarget(Field field, Class<? extends Annotation> marker, Class<?> expectedClass) {
         return isAnnotated(field, marker) && expectedClass.isAssignableFrom(field.getType());
     }
 
     /**
-     * メソッド{@code method}にアノテーション{@code maker}が付与されているかつ、{@code method}の型が{@code expectedClass}の型と一致している場合{@code ture}返却します。
+     * メソッド{@code method}にアノテーション{@code maker}が付与されているかつ、{@code method}の型が{@code expectedClass}の型と一致している場合{@code true}返却します。
      * @param method        対象のフィールド
      * @param marker        対象のアノテーション
      * @param expectedClass 比較対象のクラス
-     * @return {@code maker}が[{@code method}に付与されていれば{@code ture}
+     * @return {@code maker}が[{@code method}に付与されていれば{@code true}
      */
     private static boolean isTarget(Method method, Class<? extends Annotation> marker, Class<?> expectedClass) {
         return isAnnotated(method, marker) && expectedClass.isAssignableFrom(method.getReturnType());
@@ -277,11 +278,11 @@ public final class CodeEnumReflectionUtil {
     }
 
     /**
-     * {@code aClass}の型が{@code gif}の型と一致する場合{@code ture}を返却します。
+     * {@code aClass}の型が{@code gif}の型と一致する場合{@code true}を返却します。
      *
      * @param gif    対象の型
      * @param aClass 比較対象のクラス
-     * @return {@code aClass}の型が{@code gif}の型と一致する場合{@code ture}
+     * @return {@code aClass}の型が{@code gif}の型と一致する場合{@code true}
      */
     private static boolean hasSameParameterizedType(ParameterizedType gif, Class<?> aClass) {
         final Type[] actualTypeArguments = gif.getActualTypeArguments();

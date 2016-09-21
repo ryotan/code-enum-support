@@ -63,7 +63,6 @@ public final class Code {
      * @param code 対象の{@link CodeEnum}のクラス
      * @param <C>  対象の{@link CodeEnum}の型
      * @return {@code C}に含まれるEnum定数の{@link Stream}
-     *
      * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
     private static <C extends CodeEnum<C>> Stream<C> enums(Class<C> code) {
@@ -83,7 +82,6 @@ public final class Code {
      * @param value 取得したい{@link CodeEnum}がもつコード値
      * @param <C>   対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
-     *
      * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value) {
@@ -102,7 +100,6 @@ public final class Code {
      * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
      * @param <C>    対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
-     *
      * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
     public static <C extends CodeEnum<C>> C of(Class<C> code, String value, Predicate<? super C> filter) {
@@ -116,9 +113,10 @@ public final class Code {
      * 一致するコードが{@code C}の中に見つからなかった場合は、{@code defaultCode}をそのまま返却します。
      * </p>
      *
-     * @param code  対象の{@link CodeEnum}のクラス
-     * @param value 取得したい{@link CodeEnum}がもつコード値
-     * @param <C>   対象の{@link CodeEnum}の型
+     * @param code        対象の{@link CodeEnum}のクラス
+     * @param value       取得したい{@link CodeEnum}がもつコード値
+     * @param defaultCode {@code value}が{@code code}に存在しない場合のデフォルト値
+     * @param <C>         対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
      */
     public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode) {
@@ -134,6 +132,7 @@ public final class Code {
      *
      * @param code   対象の{@link CodeEnum}のクラス
      * @param value  取得したい{@link CodeEnum}がもつコード値
+     * @param defaultCode {@code value}が{@code code}に存在しない場合のデフォルト値
      * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
      * @param <C>    対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
@@ -205,9 +204,10 @@ public final class Code {
     /**
      * {@code C}のコードのうち、{@code filter}を満たすものでコード値が{@code value}であるコードが存在するかどうかを判定します。
      *
-     * @param code  対象のコードのクラス
-     * @param value 含まれるかどうかを判定するコード値
-     * @param <C>   対象のコードを表す型
+     * @param code   対象のコードのクラス
+     * @param value  含まれるかどうかを判定するコード値
+     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param <C>    対象のコードを表す型
      * @return {@code C}のコードに{@code filter}を満たし、コード値が{@code value}であるものが存在する場合{@code true}
      */
     public static <C extends CodeEnum<C>> boolean contains(Class<C> code, String value, Predicate<? super C> filter) {
@@ -222,7 +222,6 @@ public final class Code {
      * @param value 短縮論理名を取得したいコードのコード値
      * @param <C>   対象のコードを表す型
      * @return コード値が{@code value}であるコードの短縮論理名
-     *
      * @throws IllegalArgumentException コードに{@link ShortLabel}が付けられていない、
      *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
      * @see ShortLabel
@@ -244,7 +243,6 @@ public final class Code {
      * @param aliasName {@link AliasLabel}の付けられているフィールド名もしくはメソッド名
      * @param <C>       対象のコードを表す型
      * @return コード値が{@code value}であるコードの短縮論理名
-     *
      * @throws IllegalArgumentException {@link AliasLabel}が付けられていて名前が{@code aliasName}と完全一致するフィールドもしくはメソッドがない、
      *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
      * @see AliasLabel

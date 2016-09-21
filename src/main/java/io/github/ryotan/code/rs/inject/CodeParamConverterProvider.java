@@ -25,7 +25,7 @@ public class CodeParamConverterProvider implements ParamConverterProvider {
     @Override
     public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
         if (CodeEnumReflectionUtil.isValidCodeEnumClass(rawType)) {
-            return (ParamConverter<T>) cache.computeIfAbsent(rawType, (r) -> new CodeParamConverter((Class) rawType));
+            return (ParamConverter<T>) cache.computeIfAbsent(rawType, (r) -> new CodeParamConverter<>((Class) rawType));
         }
         return null;
     }
