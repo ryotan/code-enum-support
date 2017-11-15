@@ -132,7 +132,6 @@ class CodeSpec extends Specification {
 
     where:
     eClass  | value | defaultValue
-    NotEnum | "no"  | new NotEnum()
   }
 
   def "Code.valuesは、CodeEnumに定義されている全てのコードのリストをEnum.ordinal()でソートして返すこと"() {
@@ -270,11 +269,11 @@ class CodeSpec extends Specification {
     Code.alias(eClass, value, aliasName) == expected
 
     where:
-    eClass   | value | aliasName       | expected
-    Gender   | "9"   | "ENGLISH_LABEL" | "not applicable"
-    Gender   | "2"   | "ENGLISH_LABEL" | "female"
-    UserType | "1"   | "englishLabel"  | "ADMINISTRATOR"
-    UserType | "3"   | "englishLabel"  | "MEMBER"
+    eClass   | value | aliasName | expected
+    Gender   | "9"   | "english" | "not applicable"
+    Gender   | "2"   | "english" | "female"
+    UserType | "1"   | "english" | "ADMINISTRATOR"
+    UserType | "3"   | "english" | "MEMBER"
   }
 
   def "Code.aliasは、指定されたコードのフィールドもしくはメソッドにAliasLabelアノテーションがあり、名前がaliasNameに一致するものが存在しない場合は、IllegalArgumentExceptionを送出すること。"() {

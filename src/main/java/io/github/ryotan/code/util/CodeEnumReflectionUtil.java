@@ -69,7 +69,7 @@ public final class CodeEnumReflectionUtil {
      * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
     @SuppressWarnings("unchecked")
-    public static <C extends CodeEnum<C>> Class<C> getCodeEnumClass(Class<?> code) {
+    public static <C extends Enum<C> & CodeEnum<C>> Class<C> getCodeEnumClass(Class<?> code) {
         if (!isValidCodeEnumClass(code)) {
             throw new IllegalArgumentException(String.format("%s is not a valid CodeEnum class. "
                     + "CodeEnum class must be enum and implement CodeEnum<SELF_TYPE>.", code.getName()));
@@ -89,7 +89,7 @@ public final class CodeEnumReflectionUtil {
      * @return 指定されたフィルター名のコードパターン
      * @throws IllegalArgumentException {@code filter}が{@link CodeEnum}のクラスに存在しない場合
      */
-    public static <C extends CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
+    public static <C extends Enum<C> & CodeEnum<C>> Predicate<C> getCodeFilter(Class<C> code, String filter) {
         return findCodePatternsFromField(code, filter).orElseGet(() -> findCodePatternsFromMethod(code, filter)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Code filter '%s' for %s is not found.", filter, code))));
     }
@@ -103,7 +103,7 @@ public final class CodeEnumReflectionUtil {
      * @return フィールドオブジェクト {@link Predicate}
      */
     @SuppressWarnings("unchecked")
-    private static <C extends CodeEnum<C>> Optional<Predicate<C>> findCodePatternsFromField(Class<C> code, String name) {
+    private static <C extends Enum<C> & CodeEnum<C>> Optional<Predicate<C>> findCodePatternsFromField(Class<C> code, String name) {
         try {
             Field field = code.getField(name);
             if (isTarget(field, Filter.class, Predicate.class) && isValidCodeFilter(field.getGenericType(), code)) {
@@ -124,7 +124,7 @@ public final class CodeEnumReflectionUtil {
      * @return コードパターン
      */
     @SuppressWarnings("unchecked")
-    private static <C extends CodeEnum<C>> Optional<Predicate<C>> findCodePatternsFromMethod(Class<C> code, String name) {
+    private static <C extends Enum<C> & CodeEnum<C>> Optional<Predicate<C>> findCodePatternsFromMethod(Class<C> code, String name) {
         try {
             Method method = code.getMethod(name);
             if (isTarget(method, Filter.class, Predicate.class) && isValidCodeFilter(method.getGenericReturnType(), code)) {
@@ -160,7 +160,7 @@ public final class CodeEnumReflectionUtil {
      * @return 短縮論理名が示す値
      * @throws IllegalArgumentException {@code C}に短縮論理名が付与されている場合
      */
-    public static <C extends CodeEnum<C>> String getShortLabelValue(C code, String name) {
+    public static <C extends Enum<C> & CodeEnum<C>> String getShortLabelValue(C code, String name) {
         try {
             final Field field = code.getClass().getField(name);
             final ShortLabel[] shortLabel = field.getAnnotationsByType(ShortLabel.class);
@@ -172,68 +172,6 @@ public final class CodeEnumReflectionUtil {
         }
         throw new IllegalArgumentException(String.format("%s.%s is not annotated with '@%s'.",
                 code.getClass().getSimpleName(), code, ShortLabel.class.getSimpleName()));
-    }
-
-    /**
-     * {@code code}クラスのうち、{@code maker}アノテーションが付与された{@code name}のフィールドもしくはメソッドの値を取得します。
-     * <p>
-     * {@code code}の{@code name}にアノテーションが見つからなかった場合は、{@link IllegalArgumentException}
-     * </p>
-     *
-     * @param code   対象の{@code CodeEnum}クラス
-     * @param marker 対象のアノテーション
-     * @param name   対象のフィールド名もしくはメソッド名
-     * @param <C>    {@link CodeEnum}の実装クラス
-     * @return {@code code}の{@code name}に付与されているアノテーションの値
-     * @throws IllegalArgumentException {@code code}の{@code name}にアノテーションが付与されていない場合
-     */
-    public static <C extends CodeEnum<C>> String getAnnotatedStringValue(C code, Class<? extends Annotation> marker, String name) {
-        return findAnnotatedStringValueFromField(code, marker, name)
-                .orElseGet(() -> findAnnotatedStringValueFromMethod(code, marker, name)
-                        .orElseThrow(() -> new IllegalArgumentException(String.format("The field or method annotated as '@%s' with name '%s'"
-                                + " is not found in %s.%s", marker.getSimpleName(), name, code.getClass().getSimpleName(), code))));
-    }
-
-    /**
-     * {@code code}クラスのうち、{@code name}に一致するフィールドから{@code maker}が付与されたアノテーションの名称を取得します。
-     *
-     * @param code   対象の{@code CodeEnum}クラス
-     * @param marker 対象のアノテーション名
-     * @param name   対象のフィールド名
-     * @param <C>    {@link CodeEnum}の実装クラス
-     * @return {@code code}のフィールド{@code name}に付与されたアノテーション{@code maker}の名称
-     */
-    private static <C extends CodeEnum<C>> Optional<String> findAnnotatedStringValueFromField(C code, Class<? extends Annotation> marker, String name) {
-        try {
-            Field field = code.getClass().getField(name);
-            if (isTarget(field, marker, String.class)) {
-                return Optional.ofNullable((String) field.get(code));
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // nop
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * {@code code}クラスのうち、{@code name}に一致するメソッドから{@code maker}が付与されたアノテーションの名称を取得します。
-     *
-     * @param code   対象の{@code CodeEnum}クラス
-     * @param marker 対象のアノテーション名
-     * @param name   対象のフィールド名
-     * @param <C>    {@link CodeEnum}の実装クラス
-     * @return {@code code}のメソッド{@code name}に付与されたアノテーション{@code maker}の名称
-     */
-    private static <C extends CodeEnum<C>> Optional<String> findAnnotatedStringValueFromMethod(C code, Class<? extends Annotation> marker, String name) {
-        try {
-            Method method = code.getClass().getMethod(name);
-            if (isTarget(method, marker, String.class)) {
-                return Optional.ofNullable((String) method.invoke(code));
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            // nop
-        }
-        return Optional.empty();
     }
 
     /**

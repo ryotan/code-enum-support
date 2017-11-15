@@ -57,7 +57,7 @@ public final class Code {
     /**
      * {@code code}に含まれるEnum定数を{@link Stream}として返却します。
      * <p>
-     * {@code code}がEnum型出ない場合は、{@link IllegalArgumentException}を送出します。
+     * {@code code}がEnum型でない場合は、{@link IllegalArgumentException}を送出します。
      * </p>
      *
      * @param code 対象の{@link CodeEnum}のクラス
@@ -65,7 +65,7 @@ public final class Code {
      * @return {@code C}に含まれるEnum定数の{@link Stream}
      * @throws IllegalArgumentException {@code code}がEnum型でない場合
      */
-    private static <C extends CodeEnum<C>> Stream<C> enums(Class<C> code) {
+    private static <C extends Enum<C> & CodeEnum<C>> Stream<C> enums(Class<C> code) {
         if (code.isEnum()) {
             return Stream.of(code.getEnumConstants());
         }
@@ -84,7 +84,7 @@ public final class Code {
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
      * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
-    public static <C extends CodeEnum<C>> C of(Class<C> code, String value) {
+    public static <C extends Enum<C> & CodeEnum<C>> C of(Class<C> code, String value) {
         return of(code, value, Filters.ANY);
     }
 
@@ -102,7 +102,7 @@ public final class Code {
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)
      * @throws IllegalArgumentException {@code code}にコード値が{@code value}であるコードが存在しない場合
      */
-    public static <C extends CodeEnum<C>> C of(Class<C> code, String value, Predicate<? super C> filter) {
+    public static <C extends Enum<C> & CodeEnum<C>> C of(Class<C> code, String value, Predicate<? super C> filter) {
         return enums(code).filter(filter).filter(c -> matches(c, value)).findAny()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Code is not found. code=[%s], value=[%s]", code.getName(), value)));
     }
@@ -119,7 +119,7 @@ public final class Code {
      * @param <C>         対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
      */
-    public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode) {
+    public static <C extends Enum<C> & CodeEnum<C>> C or(Class<C> code, String value, C defaultCode) {
         return or(code, value, defaultCode, Filters.ANY);
     }
 
@@ -130,14 +130,14 @@ public final class Code {
      * 一致するコードが{@code C}の中に見つからなかった場合は、{@code defaultCode}をそのまま返却します。
      * </p>
      *
-     * @param code   対象の{@link CodeEnum}のクラス
-     * @param value  取得したい{@link CodeEnum}がもつコード値
+     * @param code        対象の{@link CodeEnum}のクラス
+     * @param value       取得したい{@link CodeEnum}がもつコード値
      * @param defaultCode {@code value}が{@code code}に存在しない場合のデフォルト値
-     * @param filter 対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
-     * @param <C>    対象の{@link CodeEnum}の型
+     * @param filter      対象の{@link CodeEnum}をフィルタリングする{@link Predicate}
+     * @param <C>         対象の{@link CodeEnum}の型
      * @return {@code value}がコード値であるような{@link CodeEnum}({@link C}のEnum定数)。存在しない場合は、{@code defaultCode}
      */
-    public static <C extends CodeEnum<C>> C or(Class<C> code, String value, C defaultCode, Predicate<? super C> filter) {
+    public static <C extends Enum<C> & CodeEnum<C>> C or(Class<C> code, String value, C defaultCode, Predicate<? super C> filter) {
         return enums(code).filter(filter).filter(c -> matches(c, value)).findAny().orElse(defaultCode);
     }
 
@@ -148,7 +148,7 @@ public final class Code {
      * @param <C>  コードのリストを取得する対象の型
      * @return {@link C}に含まれるコードのリスト
      */
-    public static <C extends CodeEnum<C>> List<C> values(Class<C> code) {
+    public static <C extends Enum<C> & CodeEnum<C>> List<C> values(Class<C> code) {
         return values(code, Filters.ANY, ORDINAL_COMPARATOR);
     }
 
@@ -160,7 +160,7 @@ public final class Code {
      * @param <C>    コードのリストを取得する対象の型
      * @return {@link C}に含まれるコードのリスト
      */
-    public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter) {
+    public static <C extends Enum<C> & CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter) {
         return values(code, filter, ORDINAL_COMPARATOR);
     }
 
@@ -172,7 +172,7 @@ public final class Code {
      * @param <C>    コードのリストを取得する対象の型
      * @return {@link C}に含まれるコードのリスト
      */
-    public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Comparator<? super C> sorter) {
+    public static <C extends Enum<C> & CodeEnum<C>> List<C> values(Class<C> code, Comparator<? super C> sorter) {
         return values(code, Filters.ANY, sorter);
     }
 
@@ -185,7 +185,7 @@ public final class Code {
      * @param <C>    コードのリストを取得する対象の型
      * @return {@link C}に含まれるコードのリスト
      */
-    public static <C extends CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter, Comparator<? super C> sorter) {
+    public static <C extends Enum<C> & CodeEnum<C>> List<C> values(Class<C> code, Predicate<? super C> filter, Comparator<? super C> sorter) {
         return enums(code).filter(filter).sorted(sorter).collect(Collectors.toList());
     }
 
@@ -197,7 +197,7 @@ public final class Code {
      * @param <C>   対象のコードを表す型
      * @return {@code C}のコードにコード値が{@code value}であるものが存在する場合{@code true}
      */
-    public static <C extends CodeEnum<C>> boolean contains(Class<C> code, String value) {
+    public static <C extends Enum<C> & CodeEnum<C>> boolean contains(Class<C> code, String value) {
         return contains(code, value, Filters.ANY);
     }
 
@@ -210,7 +210,7 @@ public final class Code {
      * @param <C>    対象のコードを表す型
      * @return {@code C}のコードに{@code filter}を満たし、コード値が{@code value}であるものが存在する場合{@code true}
      */
-    public static <C extends CodeEnum<C>> boolean contains(Class<C> code, String value, Predicate<? super C> filter) {
+    public static <C extends Enum<C> & CodeEnum<C>> boolean contains(Class<C> code, String value, Predicate<? super C> filter) {
         return enums(code).filter(filter).anyMatch(c -> matches(c, value));
     }
 
@@ -227,27 +227,28 @@ public final class Code {
      * @see ShortLabel
      * @see AliasLabel
      */
-    public static <C extends CodeEnum<C>> String shortLabel(Class<C> code, String value) {
+    public static <C extends Enum<C> & CodeEnum<C>> String shortLabel(Class<C> code, String value) {
         C target = Code.of(code, value);
-        return CodeEnumReflectionUtil.getShortLabelValue(target, ((Enum<?>) target).name());
+        return CodeEnumReflectionUtil.getShortLabelValue(target, target.name());
     }
 
     /**
      * {@code C}のコードのうち、コード値が{@code value}であるコードの別名を取得します。
      * <p>
-     * 別名は、対象のコードの{@link AliasLabel}が付けられていて名前が{@code aliasName}と完全一致するフィールドもしくはメソッドの値として取得します。
+     * 別名は、対象のコードの{@link AliasLabel}のうち、{@link AliasLabel#name()}が{@code aliasName}と一致するものの、
+     * {@link AliasLabel#label()}を利用します。
      * </p>
      *
      * @param code      対象のコードのクラス
-     * @param value     短縮論理名を取得したいコードのコード値
-     * @param aliasName {@link AliasLabel}の付けられているフィールド名もしくはメソッド名
+     * @param value     別名を取得したいコードのコード値
+     * @param aliasName {@link AliasLabel#name()}に指定している、別名のキー
      * @param <C>       対象のコードを表す型
-     * @return コード値が{@code value}であるコードの短縮論理名
-     * @throws IllegalArgumentException {@link AliasLabel}が付けられていて名前が{@code aliasName}と完全一致するフィールドもしくはメソッドがない、
+     * @return コード値が{@code value}であるコードの別名
+     * @throws IllegalArgumentException {@link AliasLabel#name()}が{@code aliasName}と完全一致するフィールドもしくはメソッドがない、
      *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
      * @see AliasLabel
      */
-    public static <C extends CodeEnum<C>> String alias(Class<C> code, String value, String aliasName) {
-        return CodeEnumReflectionUtil.getAnnotatedStringValue(Code.of(code, value), AliasLabel.class, aliasName);
+    public static <C extends Enum<C> & CodeEnum<C>> String alias(Class<C> code, String value, String aliasName) {
+        return Code.of(code, value).alias(aliasName);
     }
 }

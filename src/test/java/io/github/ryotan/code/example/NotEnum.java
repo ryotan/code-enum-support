@@ -9,7 +9,9 @@ package io.github.ryotan.code.example;
 
 import io.github.ryotan.code.CodeEnum;
 
-public class NotEnum implements CodeEnum<NotEnum> {
+public enum NotEnum implements CodeEnum<NotEnum> {
+    ;
+
     @Override
     public String value() {
         return null;
@@ -18,10 +20,5 @@ public class NotEnum implements CodeEnum<NotEnum> {
     @Override
     public String label() {
         return null;
-    }
-
-    @Override
-    public int ordinal() {
-        return 0;
     }
 }

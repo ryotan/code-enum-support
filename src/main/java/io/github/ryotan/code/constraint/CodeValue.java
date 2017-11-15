@@ -114,7 +114,7 @@ public @interface CodeValue {
         @Override
         @SuppressWarnings("unchecked")
         public void initialize(CodeValue constraint) {
-            this.code = CodeEnumReflectionUtil.getCodeEnumClass(constraint.value());
+            this.code = constraint.value();
             for (String filter : constraint.filters()) {
                 this.filter = CodeEnumReflectionUtil.getCodeFilter((Class) this.code, filter).and(this.filter);
             }
@@ -133,7 +133,7 @@ public @interface CodeValue {
          */
         @SuppressWarnings("unchecked")
         protected boolean isValidAsString(String value) {
-            return value == null || Code.contains((Class) this.code, value, this.filter);
+            return value == null || Code.contains((Class) this.code, value, (Predicate) this.filter);
         }
     }
 

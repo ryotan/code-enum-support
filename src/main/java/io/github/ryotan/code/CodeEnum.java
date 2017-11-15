@@ -14,6 +14,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -39,7 +43,7 @@ import java.util.stream.Stream;
  *     private final String value;
  *     private final String label;
  *
- *     Gender(String value, String label, String shortLabel, String english) {
+ *     Gender(String value, String label) {
  *         this.value = value;
  *         this.label = label;
  *     }
@@ -80,19 +84,28 @@ import java.util.stream.Stream;
  * <h3>コードの別名</h3>
  * <p>
  * コードによっては論理名を{@link #label()}以外に設定したい場合もあります。そういった場合は、{@link AliasLabel}アノテーションを利用してください。
- * {@link AliasLabel}アノテーションはフィールドもしくはメソッドに対して付けることができます。ただし、これらから{@link String}が取得できない
- * （フィールドの場合は{@link String}型で定義されていない。メソッドの場合は戻り値の方が{@link String}でない）場合は単純に無視されます。
+ * {@link AliasLabel}アノテーションはフィールドに対して付けることができます。
  * </p>
  * <p>
  * 例えば、{@code Gender}に英語の別名を付けたい場合、次のようにして定義することが出来ます。
  * </p>
  * <pre><code class="java">
- * &#64;AliasLabel
- * public final String ENGLISH_LABEL;
+ * &#64;AliasLabel(name = "english", label = "Male")
+ * MALE("1", "男性"),
  * </code></pre>
  * <p>
  * 定義されている別名は、{@link Code#alias(Class, String, String)}で取得することが出来ます。このとき、{@code name}パラメータには、
- * {@link AliasLabel}アノテーションを付与したフィールドあるいはメソッドの名称を設定してください。
+ * {@link AliasLabel#name()}に設定した値を設定してください。
+ * 次のようにして、設定した別名をコードとコード値から取得することが出来ます。
+ * <pre><code class="java">
+ * </code></pre>
+ * Code.alias(Gender, "1", "english")
+ * </p>
+ * <p>
+ * または、CodeEnum自体から取得することも出来ます。
+ * <pre><code class="java">
+ * </code></pre>
+ * Gender.MALE.alias("english")
  * </p>
  *
  * @param <C> 実装クラス自身の型
@@ -100,7 +113,7 @@ import java.util.stream.Stream;
  * @see Code
  * @see Filters
  */
-public interface CodeEnum<C extends CodeEnum<C>> {
+public interface CodeEnum<C extends Enum<C> & CodeEnum<C>> {
 
     /**
      * Enumが表すコードのコード値を返します。
@@ -124,12 +137,52 @@ public interface CodeEnum<C extends CodeEnum<C>> {
     int ordinal();
 
     /**
+     * コードの別名を取得します。
+     * <p>
+     * 別名は、設定されている{@link AliasLabel}で、{@link AliasLabel#name()}が{@code aliasName}と一致するものの、
+     * {@link AliasLabel#label()}を利用します。
+     * </p>
+     *
+     * @param aliasName {@link AliasLabel#name()}に指定している、別名のキー
+     * @return コード値が{@code value}であるコードの別名
+     * @throws IllegalArgumentException {@link AliasLabel#name()}が{@code aliasName}と完全一致するフィールドもしくはメソッドがない、
+     *                                  もしくは{@code code}にコード値が{@code value}であるコードが存在しない場合
+     * @see AliasLabel
+     */
+    default String alias(String aliasName) {
+        try {
+            final Class<? extends CodeEnum> codeClass = this.getClass();
+            Field field = codeClass.getField(((Enum) this).name());
+            List<AliasLabel> list = new ArrayList<>();
+            AliasLabel annotation = field.getAnnotation(AliasLabel.class);
+            AliasLabel.List annotations = field.getAnnotation(AliasLabel.List.class);
+            if (annotation != null) {
+                list.add(annotation);
+            }
+            if (annotations != null) {
+                Collections.addAll(list, annotations.value());
+            }
+            if (list.isEmpty()) {
+                throw new IllegalArgumentException(String.format("The enum field annotated as '@%s' with name '%s'"
+                        + " is not found in %s.%s.", AliasLabel.class.getSimpleName(), aliasName, codeClass.getSimpleName(), this));
+            }
+            return list.stream()
+                    .filter(a -> a.name().equals(aliasName))
+                    .map(AliasLabel::label)
+                    .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("The enum field annotated as '@%s' with name '%s'"
+                            + " is not found in %s.%s.", AliasLabel.class.getSimpleName(), aliasName, codeClass.getSimpleName(), this)));
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Cannot find enum field.", e);
+        }
+    }
+
+    /**
      * コードが{@code codes}で与えられたコードに含まれているかどうかを返します。
      *
      * @param codes 判定対象のコードの集合
      * @return コードが {@code codes} に含まれる場合 {@code true}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "varargs"})
     default boolean in(C... codes) {
         return Stream.of(codes).anyMatch(this::equals);
     }
@@ -140,7 +193,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * @param codes 判定対象のコードの集合
      * @return コードが {@code codes} に含まれない場合 {@code true}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "varargs"})
     default boolean not(C... codes) {
         return !this.in(codes);
     }
@@ -171,7 +224,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
          * @return {@code includes}に含まれる{@code T}のEnumが渡されたときに{@code true}を返す{@link Predicate}
          */
         @SafeVarargs
-        public static <T extends CodeEnum<T>> Predicate<T> include(T... includes) {
+        public static <T extends Enum<T> & CodeEnum<T>> Predicate<T> include(T... includes) {
             return c -> Stream.of(includes).anyMatch(c::equals);
         }
 
@@ -183,7 +236,7 @@ public interface CodeEnum<C extends CodeEnum<C>> {
          * @return {@code excludes}に含まれない{@code T}のEnumが渡されたときに{@code true}を返す{@link Predicate}
          */
         @SafeVarargs
-        public static <T extends CodeEnum<T>> Predicate<T> exclude(T... excludes) {
+        public static <T extends Enum<T> & CodeEnum<T>> Predicate<T> exclude(T... excludes) {
             return include(excludes).negate();
         }
     }
@@ -274,9 +327,26 @@ public interface CodeEnum<C extends CodeEnum<C>> {
      * @author ryotan
      * @see Code#alias(Class, String, String)
      */
-    @Target({METHOD, FIELD})
+    @Target({FIELD})
     @Retention(RUNTIME)
     @Documented
     @interface AliasLabel {
+
+        /**
+         * @return 別名のキー
+         */
+        String name();
+
+        /**
+         * @return {@code name}に対応する別名
+         */
+        String label();
+
+        @Target({FIELD})
+        @Retention(RUNTIME)
+        @Documented
+        @interface List {
+            AliasLabel[] value() default {};
+        }
     }
 }
